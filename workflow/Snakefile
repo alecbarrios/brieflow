@@ -10,16 +10,16 @@ ROOT_FP = Path(config["all"]["root_fp"])
 # Get paths to the sample and combo files dfs
 SBS_SAMPLES_FP = Path(config["preprocess"]["sbs_samples_fp"])
 SBS_COMBO_FP = Path(config["preprocess"]["sbs_combo_fp"])
-PHENOTYPE_SAMPLES_FP = Path(config["preprocess"]["phenotype_samples_fp"])
-PHENOTYPE_COMBO_FP = Path(config["preprocess"]["phenotype_combo_fp"])
+#PHENOTYPE_SAMPLES_FP = Path(config["preprocess"]["phenotype_samples_fp"]) #stable5 doesnt need phenotype
+#PHENOTYPE_COMBO_FP = Path(config["preprocess"]["phenotype_combo_fp"]) #stable5 doesnt need phenotype
 SBS_METADATA_SAMPLES_DF_FP = (
     Path(fp) if (fp := config["preprocess"].get("sbs_metadata_samples_df_fp")) else None
 )
-PHENOTYPE_METADATA_SAMPLES_DF_FP = (
-    Path(fp)
-    if (fp := config["preprocess"].get("phenotype_metadata_samples_df_fp"))
-    else None
-)
+#PHENOTYPE_METADATA_SAMPLES_DF_FP = (
+#    Path(fp)
+#    if (fp := config["preprocess"].get("phenotype_metadata_samples_df_fp"))
+#    else None
+#)
 
 # Load sbs samples if the file exists
 if SBS_SAMPLES_FP.exists():
@@ -45,42 +45,42 @@ else:
     sbs_metadata_samples_df = pd.DataFrame()
 
 # Load phenotype samples if the file exists
-if PHENOTYPE_SAMPLES_FP.exists():
-    phenotype_samples_df = pd.read_csv(PHENOTYPE_SAMPLES_FP, sep="\t")
-    if len(phenotype_samples_df) > 0:
-        phenotype_wildcard_combos = pd.read_csv(PHENOTYPE_COMBO_FP, sep="\t").astype(
-            str
-        )
-        if (
-            PHENOTYPE_METADATA_SAMPLES_DF_FP
-            and PHENOTYPE_METADATA_SAMPLES_DF_FP.exists()
-        ):
-            phenotype_metadata_samples_df = pd.read_csv(
-                PHENOTYPE_METADATA_SAMPLES_DF_FP, sep="\t"
-            )
-        else:
-            phenotype_metadata_samples_df = pd.DataFrame()
-    else:
-        print("No phenotype samples found in the file!")
-        phenotype_wildcard_combos = pd.DataFrame(
-            columns=["plate", "well", "tile"]
-        ).astype(str)
-        phenotype_metadata_samples_df = pd.DataFrame()
-else:
-    print(f"Phenotype samples file not found: {PHENOTYPE_SAMPLES_FP}")
-    phenotype_samples_df = pd.DataFrame()
-    phenotype_wildcard_combos = pd.DataFrame(columns=["plate", "well", "tile"]).astype(
-        str
-    )
-    phenotype_metadata_samples_df = pd.DataFrame()
+#if PHENOTYPE_SAMPLES_FP.exists():
+#    phenotype_samples_df = pd.read_csv(PHENOTYPE_SAMPLES_FP, sep="\t")
+#    if len(phenotype_samples_df) > 0:
+#        phenotype_wildcard_combos = pd.read_csv(PHENOTYPE_COMBO_FP, sep="\t").astype(
+#            str
+#        )
+#        if (
+#            PHENOTYPE_METADATA_SAMPLES_DF_FP
+#           and PHENOTYPE_METADATA_SAMPLES_DF_FP.exists()
+#        ):
+#            phenotype_metadata_samples_df = pd.read_csv(
+#                PHENOTYPE_METADATA_SAMPLES_DF_FP, sep="\t"
+#            )
+#        else:
+#           phenotype_metadata_samples_df = pd.DataFrame()
+#    else:
+#        print("No phenotype samples found in the file!")
+#        phenotype_wildcard_combos = pd.DataFrame(
+#            columns=["plate", "well", "tile"]
+#       ).astype(str)
+#        phenotype_metadata_samples_df = pd.DataFrame()
+#else:
+#    print(f"Phenotype samples file not found: {PHENOTYPE_SAMPLES_FP}")
+#    phenotype_samples_df = pd.DataFrame()
+#    phenotype_wildcard_combos = pd.DataFrame(columns=["plate", "well", "tile"]).astype(
+#        str
+#    )
+#    phenotype_metadata_samples_df = pd.DataFrame()
 
 # Generate metadata-specific wildcard combinations
 sbs_metadata_wildcard_combos = get_metadata_wildcard_combos(
     sbs_samples_df, sbs_metadata_samples_df
 )
-phenotype_metadata_wildcard_combos = get_metadata_wildcard_combos(
-    phenotype_samples_df, phenotype_metadata_samples_df
-)
+#phenotype_metadata_wildcard_combos = get_metadata_wildcard_combos(
+#   phenotype_samples_df, phenotype_metadata_samples_df
+#)
 
 print(
     f"SBS metadata jobs: {len(sbs_metadata_wildcard_combos)} (columns: {list(sbs_metadata_wildcard_combos.columns) if len(sbs_metadata_wildcard_combos) > 0 else 'none'})"

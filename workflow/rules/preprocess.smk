@@ -38,37 +38,37 @@ rule combine_metadata_sbs:
 
 
 # Extract metadata for phenotype images
-rule extract_metadata_phenotype:
-    input:
-        unpack(lambda wildcards: get_inputs_for_metadata_extraction(
-            "phenotype", config, phenotype_samples_df, phenotype_metadata_samples_df, wildcards
-        ))
-    output:
-        PREPROCESS_OUTPUTS_MAPPED["extract_metadata_phenotype"],
-    params:
-        plate=lambda wildcards: wildcards.plate,
-        well=lambda wildcards: getattr(wildcards, 'well', None),
-        tile=lambda wildcards: getattr(wildcards, 'tile', None),
-        round=lambda wildcards: getattr(wildcards, 'round', None),
-    script:
-        "../scripts/preprocess/extract_metadata.py"
+#rule extract_metadata_phenotype:
+#    input:
+#        unpack(lambda wildcards: get_inputs_for_metadata_extraction(
+#            "phenotype", config, phenotype_samples_df, phenotype_metadata_samples_df, wildcards
+#        ))
+#    output:
+#        PREPROCESS_OUTPUTS_MAPPED["extract_metadata_phenotype"],
+#    params:
+#        plate=lambda wildcards: wildcards.plate,
+#        well=lambda wildcards: getattr(wildcards, 'well', None),
+#        tile=lambda wildcards: getattr(wildcards, 'tile', None),
+#        round=lambda wildcards: getattr(wildcards, 'round', None),
+#    script:
+#        "../scripts/preprocess/extract_metadata.py"
 
 
 # Combine metadata for phenotype images
-rule combine_metadata_phenotype:
-    input:
-        lambda wildcards: output_to_input(
-            PREPROCESS_OUTPUTS["extract_metadata_phenotype"],
-            wildcards=wildcards,
-            expansion_values=get_expansion_values("phenotype", config, phenotype_metadata_wildcard_combos),
-            metadata_combos=phenotype_wildcard_combos,
-        ),
-    output:
-        PREPROCESS_OUTPUTS_MAPPED["combine_metadata_phenotype"],
-    params:
-        well=lambda wildcards: wildcards.well,
-    script:
-        "../scripts/preprocess/combine_metadata.py"
+#rule combine_metadata_phenotype:
+#    input:
+#       lambda wildcards: output_to_input(
+#            PREPROCESS_OUTPUTS["extract_metadata_phenotype"],
+#            wildcards=wildcards,
+#            expansion_values=get_expansion_values("phenotype", config, phenotype_metadata_wildcard_combos),
+#            metadata_combos=phenotype_wildcard_combos,
+#        ),
+#    output:
+#        PREPROCESS_OUTPUTS_MAPPED["combine_metadata_phenotype"],
+#    params:
+#        well=lambda wildcards: wildcards.well,
+#   script:
+#        "../scripts/preprocess/combine_metadata.py"
 
 
 # Convert SBS image files to TIFF
@@ -91,22 +91,22 @@ rule convert_sbs:
 
 
 # Convert phenotype image files to TIFF
-rule convert_phenotype:
-    input:
-        lambda wildcards: get_sample_fps(
-            phenotype_samples_df,
-            plate=wildcards.plate,
-            well=wildcards.well,
-            tile=wildcards.tile if include_tile_in_input("phenotype", config) else None,
-            round_order=config["preprocess"]["phenotype_round_order"],
-            channel_order=config["preprocess"]["phenotype_channel_order"]
-        ),
-    output:
-        PREPROCESS_OUTPUTS_MAPPED["convert_phenotype"],
-    params:
-        tile=lambda wildcards: int(wildcards.tile),
-    script:
-        "../scripts/preprocess/image_to_tiff.py"
+#rule convert_phenotype:
+#    input:
+#        lambda wildcards: get_sample_fps(
+#            phenotype_samples_df,
+#            plate=wildcards.plate,
+#            well=wildcards.well,
+#            tile=wildcards.tile if include_tile_in_input("phenotype", config) else None,
+#            round_order=config["preprocess"]["phenotype_round_order"],
+#            channel_order=config["preprocess"]["phenotype_channel_order"]
+#        ),
+#    output:
+#        PREPROCESS_OUTPUTS_MAPPED["convert_phenotype"],
+#    params:
+#        tile=lambda wildcards: int(wildcards.tile),
+#    script:
+#        "../scripts/preprocess/image_to_tiff.py"
 
 
 # Calculate illumination correction function for SBS files
@@ -128,21 +128,21 @@ rule calculate_ic_sbs:
 
 
 # Calculate illumination correction for phenotype files
-rule calculate_ic_phenotype:
-    input:
-        lambda wildcards: output_to_input(
-            PREPROCESS_OUTPUTS["convert_phenotype"],
-            wildcards=wildcards,
-            expansion_values=["tile"],
-            metadata_combos=phenotype_wildcard_combos,
-        ),
-    output:
-        PREPROCESS_OUTPUTS_MAPPED["calculate_ic_phenotype"],
-    params:
-        threading=True,
-        sample_fraction=config["preprocess"]["sample_fraction"],
-    script:
-        "../scripts/preprocess/calculate_ic_field.py"
+#rule calculate_ic_phenotype:
+#    input:
+#        lambda wildcards: output_to_input(
+#            PREPROCESS_OUTPUTS["convert_phenotype"],
+#            wildcards=wildcards,
+#            expansion_values=["tile"],
+#            metadata_combos=phenotype_wildcard_combos,
+#        ),
+#    output:
+#       PREPROCESS_OUTPUTS_MAPPED["calculate_ic_phenotype"],
+#    params:
+#        threading=True,
+#        sample_fraction=config["preprocess"]["sample_fraction"],
+#    script:
+#        "../scripts/preprocess/calculate_ic_field.py"
 
 
 # rule for all preprocessing steps
