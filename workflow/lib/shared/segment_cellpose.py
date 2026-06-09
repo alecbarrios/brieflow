@@ -60,7 +60,7 @@ def segment_cellpose(
     cyto_index,
     nuclei_diameter,
     cell_diameter,
-    cyto_model="cyto3",
+    cyto_model="cpsam",
     helper_index=None,
     cellpose_kwargs=dict(
         flow_threshold=0.4,
@@ -258,7 +258,7 @@ def estimate_diameters(
     cyto_index,
     helper_index=None,
     channels=[2, 3],  # Default channels for cell estimation
-    cyto_model="cyto3",
+    cyto_model="cpsam",
     cellpose_kwargs=dict(flow_threshold=0.4, cellprob_threshold=0),
     gpu=False,
     logscale=True,
@@ -382,7 +382,7 @@ def segment_cellpose_rgb(
             f"Either change your config to use model='cpsam', "
             f"or downgrade Cellpose: uv pip install cellpose==3.1.0"
         )
-    if not CELLPOSE_4X and cyto_model == "cpsam":
+    if not CELLPOSE_4X and cyto_model == "cyto3":
         raise ValueError(
             f"CPSAM model requires Cellpose 4.x. "
             f"You have Cellpose {'.'.join(map(str, CELLPOSE_VERSION))}. "
