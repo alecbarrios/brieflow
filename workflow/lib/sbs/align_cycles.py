@@ -452,7 +452,7 @@ def manual_fill_channels(
 
 
 def visualize_sbs_alignment(
-    aligned_data, channel_names, dapi_cycle, viz_channels, crop_size=300
+    aligned_data, channel_names, dapi_cycle, viz_channels, crop_size=300, show_dapi=True
 ):
     """Visualize SBS cycle alignment with DAPI reference and RGB base channel overlay.
 
@@ -468,6 +468,7 @@ def visualize_sbs_alignment(
         viz_channels (list): List of (cycle_idx, channel_name) tuples for RGB overlay.
             Must have exactly 3 elements for R, G, B channels.
         crop_size (int, optional): Size of zoomed crops in pixels. Defaults to 300.
+        show_dapi (bool, optional): If True, overlay grayscale DAPI background. If False, show only the RGB base channels on black. Defaults to True.
 
     Returns:
         matplotlib.figure.Figure: Figure with 3 panels showing alignment at different locations,
@@ -493,16 +494,16 @@ def visualize_sbs_alignment(
 
     n_cycles, n_channels, height, width = aligned_data.shape
 
-    # Get DAPI reference
-    if dapi_cycle >= n_cycles:
-        print(f"Error: DAPI cycle {dapi_cycle} out of range (max {n_cycles - 1})")
-        return None
-    if "DAPI" not in channel_names:
-        print(f"Error: DAPI channel not found in {channel_names}")
-        return None
-
-    dapi_idx = channel_names.index("DAPI")
-    dapi_data = aligned_data[dapi_cycle, dapi_idx]
+# Get DAPI reference (only if we're going to display it)
+    if show_dapi:
+        if dapi_cycle >= n_cycles:
+            print(f"Error: DAPI cycle {dapi_cycle} out of range (max {n_cycles - 1})")
+            return None
+        if "DAPI" not in channel_names:
+            print(f"Error: DAPI channel not found in {channel_names}")
+            return None
+        dapi_idx = channel_names.index("DAPI")
+        dapi_data = aligned_data[dapi_cycle, dapi_idx]
 
     # Parse base channels for RGB overlay
     rgb_data = []
@@ -540,14 +541,14 @@ def visualize_sbs_alignment(
         # Create composite: DAPI (grayscale) + RGB overlay (bases)
         composite = np.zeros((crop_size, crop_size, 3))
 
-        # Add DAPI as grayscale background
-        dapi_crop = dapi_data[y_start:y_end, x_start:x_end]
-        p2, p98 = np.percentile(dapi_crop, [2, 98])
-        dapi_norm = np.clip((dapi_crop - p2) / (p98 - p2 + 1e-8), 0, 1)
-        # Set DAPI in all RGB channels for grayscale
-        composite[:, :, 0] = dapi_norm
-        composite[:, :, 1] = dapi_norm
-        composite[:, :, 2] = dapi_norm
+        # Add DAPI as grayscale background (if enabled)
+        if show_dapi:
+            dapi_crop = dapi_data[y_start:y_end, x_start:x_end]
+            p2, p98 = np.percentile(dapi_crop, [2, 98])
+            dapi_norm = np.clip((dapi_crop - p2) / (p98 - p2 + 1e-8), 0, 1)
+            composite[:, :, 0] = dapi_norm
+            composite[:, :, 1] = dapi_norm
+            composite[:, :, 2] = dapi_norm
 
         # Overlay base channels as RGB
         for i, img_data in enumerate(rgb_data):
@@ -558,9 +559,10 @@ def visualize_sbs_alignment(
             composite[:, :, i] = np.clip(composite[:, :, i] + crop_norm * 0.7, 0, 1)
 
         axes[col_idx].imshow(composite)
+        dapi_label = f"DAPI: C{dapi_cycle + 1} (gray) | " if show_dapi else ""
         axes[col_idx].set_title(
             f"{location_name}\n"
-            + f"DAPI: C{dapi_cycle + 1} (gray) | "
+            + dapi_label
             + f"R={rgb_labels[0]}, G={rgb_labels[1]}, B={rgb_labels[2]}",
             fontsize=10,
         )

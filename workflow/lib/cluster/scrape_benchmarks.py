@@ -191,6 +191,7 @@ def get_uniprot_data(species_id: str = "9606"):
     retries = Retry(total=5, backoff_factor=0.25, status_forcelist=[500, 502, 503, 504])
     session = requests.Session()
     session.mount("https://", HTTPAdapter(max_retries=retries))
+    session.headers.update({"User-Agent": "brieflow-ASD-443-6GP (abarrios@broadinstitute.org)"})
 
     # Function to extract next link from headers
     def get_next_link(headers):
