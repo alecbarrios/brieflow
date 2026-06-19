@@ -268,6 +268,7 @@ rule final_merge:
         MERGE_OUTPUTS_MAPPED["final_merge"][0],
     params:
         approach=config.get("merge", {}).get("approach", "fast"),
+        batch_map=config["merge"]["batch_map"],
     script:
         "../scripts/merge/final_merge.py"
 

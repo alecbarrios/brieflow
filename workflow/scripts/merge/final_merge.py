@@ -29,5 +29,7 @@ if snakemake.params.approach == "stitch":
         }
     )
 
+merged_final["batch"] = merged_final["plate"].astype(str).map(snakemake.params.batch_map)
+
 # Save final merged dataset
 merged_final.to_parquet(snakemake.output[0])
