@@ -16,6 +16,8 @@ rule extract_metadata_sbs:
         well=lambda wildcards: getattr(wildcards, 'well', None),
         tile=lambda wildcards: getattr(wildcards, 'tile', None),
         cycle=lambda wildcards: getattr(wildcards, 'cycle', None),
+    benchmark:
+        "brieflow_output/benchmarks/extract_metadata_sbs/P-{plate}_W-{well}_C-{cycle}_T-{tile}.tsv"
     script:
         "../scripts/preprocess/extract_metadata.py"
 
@@ -33,6 +35,8 @@ rule combine_metadata_sbs:
         PREPROCESS_OUTPUTS_MAPPED["combine_metadata_sbs"],
     params:
         well=lambda wildcards: wildcards.well,
+    benchmark:
+        "brieflow_output/benchmarks/combine_metadata_sbs/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/preprocess/combine_metadata.py"
 
@@ -50,6 +54,8 @@ rule extract_metadata_phenotype:
         well=lambda wildcards: getattr(wildcards, 'well', None),
         tile=lambda wildcards: getattr(wildcards, 'tile', None),
         round=lambda wildcards: getattr(wildcards, 'round', None),
+    benchmark:
+        "brieflow_output/benchmarks/extract_metadata_phenotype/P-{plate}_R-{round}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/preprocess/extract_metadata.py"
 
@@ -67,6 +73,8 @@ rule combine_metadata_phenotype:
         PREPROCESS_OUTPUTS_MAPPED["combine_metadata_phenotype"],
     params:
         well=lambda wildcards: wildcards.well,
+    benchmark:
+        "brieflow_output/benchmarks/combine_metadata_phenotype/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/preprocess/combine_metadata.py"
 
@@ -86,6 +94,8 @@ rule convert_sbs:
         PREPROCESS_OUTPUTS_MAPPED["convert_sbs"],
     params:
         tile=lambda wildcards: int(wildcards.tile),
+    benchmark:
+        "brieflow_output/benchmarks/convert_sbs/P-{plate}_W-{well}_T-{tile}_C-{cycle}.tsv"
     script:
         "../scripts/preprocess/image_to_tiff.py"
 
@@ -105,6 +115,8 @@ rule convert_phenotype:
         PREPROCESS_OUTPUTS_MAPPED["convert_phenotype"],
     params:
         tile=lambda wildcards: int(wildcards.tile),
+    benchmark:
+        "brieflow_output/benchmarks/convert_phenotype/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/preprocess/image_to_tiff.py"
 
@@ -121,8 +133,10 @@ rule calculate_ic_sbs:
     output:
         PREPROCESS_OUTPUTS_MAPPED["calculate_ic_sbs"],
     params:
-        threading=True,
+        threading=False,
         sample_fraction=config["preprocess"]["sample_fraction"],
+    benchmark:
+        "brieflow_output/benchmarks/calculate_ic_sbs/P-{plate}_W-{well}_C-{cycle}.tsv"
     script:
         "../scripts/preprocess/calculate_ic_field.py"
 
@@ -139,8 +153,10 @@ rule calculate_ic_phenotype:
     output:
         PREPROCESS_OUTPUTS_MAPPED["calculate_ic_phenotype"],
     params:
-        threading=True,
+        threading=False,
         sample_fraction=config["preprocess"]["sample_fraction"],
+    benchmark:
+        "brieflow_output/benchmarks/calculate_ic_phenotype/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/preprocess/calculate_ic_field.py"
 

@@ -22,6 +22,8 @@ rule align_sbs:
         skip_cycles_indices=config["sbs"]["skip_cycles_indices"],
         manual_background_cycle_index=config["sbs"]["manual_background_cycle_index"],
         manual_channel_mapping=config["sbs"]["manual_channel_mapping"],
+    benchmark:
+        "brieflow_output/benchmarks/align_sbs/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/align_cycles.py"
 
@@ -34,6 +36,8 @@ rule log_filter:
         SBS_OUTPUTS_MAPPED["log_filter"],
     params:
         skip_index=config["sbs"]["extra_channel_indices"],
+    benchmark:
+        "brieflow_output/benchmarks/log_filter/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/log_filter.py"
 
@@ -46,6 +50,8 @@ rule compute_standard_deviation:
         SBS_OUTPUTS_MAPPED["compute_standard_deviation"],
     params:
         remove_index=config["sbs"]["extra_channel_indices"],
+    benchmark:
+        "brieflow_output/benchmarks/compute_standard_deviation/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/compute_standard_deviation.py"
 
@@ -58,6 +64,8 @@ rule find_peaks:
         SBS_OUTPUTS_MAPPED["find_peaks"],
     params:
         config=lambda wildcards: get_spot_detection_params(config)
+    benchmark:
+        "brieflow_output/benchmarks/find_peaks/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/find_peaks.py"
 
@@ -71,6 +79,8 @@ rule max_filter:
     params:
         width=config["sbs"]["max_filter_width"],
         remove_index=config["sbs"]["extra_channel_indices"],
+    benchmark:
+        "brieflow_output/benchmarks/max_filter/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/max_filter.py"
 
@@ -105,6 +115,8 @@ rule apply_ic_field_sbs:
         cyto_cycle=config["sbs"]["cyto_cycle"],
         cyto_cycle_index=config["sbs"]["cyto_cycle_index"],
         extra_channel_indices=config["sbs"]["extra_channel_indices"],
+    benchmark:
+        "brieflow_output/benchmarks/apply_ic_field_sbs/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/apply_ic_field_sbs.py"
 
@@ -117,6 +129,8 @@ rule segment_sbs:
         SBS_OUTPUTS_MAPPED["segment_sbs"],
     params:
         config=lambda wildcards: get_segmentation_params("sbs", config),
+    benchmark:
+        "brieflow_output/benchmarks/segment_sbs/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/shared/segment.py"
 
@@ -133,6 +147,8 @@ rule extract_bases:
     params:
         threshold_peaks=config["sbs"]["threshold_peaks"],
         bases=config["sbs"]["bases"],
+    benchmark:
+        "brieflow_output/benchmarks/extract_bases/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/extract_bases.py"
 
@@ -146,6 +162,8 @@ rule call_reads:
         SBS_OUTPUTS_MAPPED["call_reads"],
     params:
         call_reads_method=config["sbs"]["call_reads_method"]
+    benchmark:
+        "brieflow_output/benchmarks/call_reads/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/call_reads.py"
 
@@ -158,6 +176,8 @@ rule call_cells:
         SBS_OUTPUTS_MAPPED["call_cells"],
     params:
         config=lambda wildcards: get_call_cells_params(config),
+    benchmark:
+        "brieflow_output/benchmarks/call_cells/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/sbs/call_cells.py"
 
@@ -169,6 +189,8 @@ rule extract_sbs_info:
         SBS_OUTPUTS["segment_sbs"][0],
     output:
         SBS_OUTPUTS_MAPPED["extract_sbs_info"],
+    benchmark:
+        "brieflow_output/benchmarks/extract_sbs_info/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/shared/extract_phenotype_minimal.py"
 
@@ -184,6 +206,8 @@ rule combine_reads:
         ),
     output:
         SBS_OUTPUTS_MAPPED["combine_reads"],
+    benchmark:
+        "brieflow_output/benchmarks/combine_reads/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/shared/combine_dfs.py"
 
@@ -199,6 +223,8 @@ rule combine_cells:
         ),
     output:
         SBS_OUTPUTS_MAPPED["combine_cells"],
+    benchmark:
+        "brieflow_output/benchmarks/combine_cells/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/shared/combine_dfs.py"
 
@@ -214,6 +240,8 @@ rule combine_sbs_info:
         ),
     output:
         SBS_OUTPUTS_MAPPED["combine_sbs_info"],
+    benchmark:
+        "brieflow_output/benchmarks/combine_sbs_info/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/shared/combine_dfs.py"
 
@@ -243,6 +271,8 @@ rule eval_segmentation_sbs:
         ),
     output:
         SBS_OUTPUTS_MAPPED["eval_segmentation_sbs"],
+    benchmark:
+        "brieflow_output/benchmarks/eval_segmentation_sbs/P-{plate}.tsv"
     script:
         "../scripts/shared/eval_segmentation.py"
 
@@ -286,6 +316,8 @@ rule eval_mapping:
             else config["sbs"].get("prefix_col", "prefix")
         ),
         prefix_recomb=config["sbs"].get("prefix_recomb", "prefix_recomb"),
+    benchmark:
+        "brieflow_output/benchmarks/eval_mapping/P-{plate}.tsv"
     script:
         "../scripts/sbs/eval_mapping.py"
 

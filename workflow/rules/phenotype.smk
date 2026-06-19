@@ -9,6 +9,8 @@ rule apply_ic_field_phenotype:
         ancient(PREPROCESS_OUTPUTS["calculate_ic_phenotype"]),
     output:
         PHENOTYPE_OUTPUTS_MAPPED["apply_ic_field_phenotype"],
+    benchmark:
+        "brieflow_output/benchmarks/apply_ic_field_phenotype/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/phenotype/apply_ic_field_phenotype.py"
 
@@ -21,6 +23,8 @@ rule align_phenotype:
         PHENOTYPE_OUTPUTS_MAPPED["align_phenotype"],
     params:
         config=lambda wildcards: get_alignment_params(wildcards, config),
+    benchmark:
+        "brieflow_output/benchmarks/align_phenotype/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/phenotype/align_phenotype.py"
 
@@ -33,6 +37,8 @@ rule segment_phenotype:
         PHENOTYPE_OUTPUTS_MAPPED["segment_phenotype"],
     params:
         config=lambda wildcards: get_segmentation_params("phenotype", config),
+    benchmark:
+        "brieflow_output/benchmarks/segment_phenotype/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/shared/segment.py"
 
@@ -48,6 +54,8 @@ rule identify_cytoplasm:
         PHENOTYPE_OUTPUTS_MAPPED["identify_cytoplasm"],
     params:
         segment_cells=config["phenotype"].get("segment_cells", True),
+    benchmark:
+        "brieflow_output/benchmarks/identify_cytoplasm/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/phenotype/identify_cytoplasm_cellpose.py"
 
@@ -59,6 +67,8 @@ rule extract_phenotype_info:
         PHENOTYPE_OUTPUTS["segment_phenotype"][0],
     output:
         PHENOTYPE_OUTPUTS_MAPPED["extract_phenotype_info"],
+    benchmark:
+        "brieflow_output/benchmarks/extract_phenotype_info/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/shared/extract_phenotype_minimal.py"
 
@@ -74,6 +84,8 @@ rule combine_phenotype_info:
         ),
     output:
         PHENOTYPE_OUTPUTS_MAPPED["combine_phenotype_info"],
+    benchmark:
+        "brieflow_output/benchmarks/combine_phenotype_info/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/shared/combine_dfs.py"
 
@@ -96,6 +108,8 @@ rule extract_phenotype:
         channel_names=config["phenotype"]["channel_names"],
         cp_method=config["phenotype"]["cp_method"],
         segment_cells=config["phenotype"].get("segment_cells", True),
+    benchmark:
+        "brieflow_output/benchmarks/extract_phenotype/P-{plate}_W-{well}_T-{tile}.tsv"
     script:
         "../scripts/phenotype/extract_phenotype.py"
 
@@ -114,6 +128,8 @@ rule merge_phenotype:
         segment_cells=config["phenotype"].get("segment_cells", True),
     output:
         PHENOTYPE_OUTPUTS_MAPPED["merge_phenotype"],
+    benchmark:
+        "brieflow_output/benchmarks/merge_phenotype/P-{plate}_W-{well}.tsv"
     script:
         "../scripts/phenotype/merge_phenotype.py"
 
@@ -144,6 +160,8 @@ rule eval_segmentation_phenotype:
         ),
     output:
         PHENOTYPE_OUTPUTS_MAPPED["eval_segmentation_phenotype"],
+    benchmark:
+        "brieflow_output/benchmarks/eval_segmentation_phenotype/P-{plate}.tsv"
     script:
         "../scripts/shared/eval_segmentation.py"
 
@@ -165,7 +183,9 @@ rule eval_features:
             metadata_combos=phenotype_wildcard_combos,
         ),
     output:
-        PHENOTYPE_OUTPUTS_MAPPED["eval_features"],
+        PHENOTYPE_OUTPUTS_MAPPED["eval_features"]
+    benchmark:
+        "brieflow_output/benchmarks/eval_features/P-{plate}.tsv",
     script:
         "../scripts/phenotype/eval_features.py"
 
