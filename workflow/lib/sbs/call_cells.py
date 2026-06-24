@@ -139,6 +139,12 @@ def call_cells(
     # === STEP 2: Quality filter ===
 
     df_reads = df_reads.query("Q_min >= @q_min")
+    # Guard: if the quality filter removed every read, return the standard empty
+    # output — mirrors the reads_data.empty guard at the top of call_cells (line 93).
+    if df_reads.empty:
+        print(f"All reads removed by q_min={q_min}; returning empty output for this tile.")
+        return _get_empty_output()
+
 
     # === STEP 3: Error correction (requires library) ===
 
